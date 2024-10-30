@@ -1,14 +1,14 @@
-let CarModel = require('../models/cars');
+let UserModel = require('../models/users');
 
 module.exports.create = async function (req, res, next) {
     try {
-        let newCar = new CarModel(req.body);
+        let newUser = new UserModel(req.body);
 
-        let result = await CarModel.create(newCar);
+        let result = await UserModel.create(newUser);
         res.json(
             {
                 success: true,
-                message: 'Car created successfully.'
+                message: 'User created successfully.'
             }
         )
     } catch (error) {
@@ -20,7 +20,7 @@ module.exports.create = async function (req, res, next) {
 module.exports.list = async function (req, res, next) {
 
     try {
-        const items = await CarModel.find();
+        const items = await UserModel.find();
         res.status(200).json(items); 
     } catch (error) {
         console.log(error);
@@ -28,11 +28,11 @@ module.exports.list = async function (req, res, next) {
     }
 }
 
-module.exports.carGet = async function (req, res, next) {
+module.exports.userGet = async function (req, res, next) {
     try {
-        let uID = req.params.carID;
+        let uID = req.params.userID;
 
-        req.car = await CarModel.findOne({ _id: uID });
+        req.user = await UserModel.findOne({ _id: uID });
         next();
 
     } catch (error) {
@@ -42,30 +42,30 @@ module.exports.carGet = async function (req, res, next) {
 
 }
 
-module.exports.carByID = async function (req, res, next) {
-    res.json(req.car);
+module.exports.userByID = async function (req, res, next) {
+    res.json(req.user);
 }
 
 module.exports.update = async function (req, res, next) {
     try {
-        let uID = req.params.carID;
+        let uID = req.params.userID;
 
-        let updateCar = new CarModel(req.body);
-        updateCar._id = uID;
-
-        let result = await CarModel.updateOne({ _id: uID }, updateCar);
+        let result = await UserModel.updateOne(
+            { _id: uID },
+            { ...req.body, updated: Date.now() }
+        );
         console.log(result);
 
         if (result.modifiedCount > 0) {
             res.json(
                 {
                     success: true,
-                    message: 'Car updated successfully.'
+                    message: 'User updated successfully.'
                 }
             );
         } else {
             // Express will catch this on its own.
-            throw new Error('Car not updated. Are you sure it exists?')
+            throw new Error('User not updated. Are you sure it exists?')
         }
     } catch (error) {
         console.log(error);
@@ -75,21 +75,21 @@ module.exports.update = async function (req, res, next) {
 
 module.exports.remove = async function (req, res, next) {
     try {
-        let uID = req.params.carID;
+        let uID = req.params.userID;
 
-        let result = await CarModel.deleteOne({ _id: uID });
+        let result = await UserModel.deleteOne({ _id: uID });
         console.log(result);
 
         if (result.deletedCount > 0) {
             res.json(
                 {
                     success: true,
-                    message: 'Car deleted successfully.'
+                    message: 'User deleted successfully.'
                 }
             );
         } else {
             // Express will catch this on its own.
-            throw new Error('Car not deleted. Are you sure it exists?')
+            throw new Error('User not deleted. Are you sure it exists?')
         }
     } catch (error) {
         console.log(error);
